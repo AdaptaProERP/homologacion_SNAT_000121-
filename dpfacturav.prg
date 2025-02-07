@@ -153,12 +153,14 @@ PROCE MAIN(cTipDoc,cNumeroD,lView,cLetra,cCodSuc,cCenCos,cCodAlm,cCodCli,cDocOrg
      RETURN .F.
   ENDIF
 
-  
-
+  // Requiere Serie Fiscal
+  IF cTipDoc="FAV" .OR. cTipDoc="FAM" .OR. cTipDoc="CRE" .OR. cTipDoc="DEB" .OR. cTipDoc="TIK" .OR. cTipDoc="DEV"
+     lLibVta:=.T.
+  ENDIF
+ 
   // Buscamos Letra segun tipo de Documento
- // ? cSerieF,"Mensaje provisional",cTipDoc,cLetra
 
-  IF Empty(cLetra).AND. lLibVta .AND. !lView
+  IF Empty(cLetra) .AND. lLibVta .AND. !lView
 
      // ? cSerieF,"cSerieF"
 
@@ -781,15 +783,7 @@ ELSE
 
 ENDIF
 
-  // Gaceta Oficial 43032 del 19 de diciembre de 2.024
-  IF cTipDoc="FAV" .AND. oDp:dFecha>=CTOD("19/03/2025")
-     oDocCli:lMod:=.F.  // no se puede modificar, Anular solo mediante funcionalidad MOTIVOS, debe seleccionar DEBITO/CREDITO 
-  ENDIF
-  
-  // Campos del DOC_CHKSUM
-  oDocCli:aFieldsC    :={"DOC_DCTO","DOC_OTROS","DOC_RECARG","DOC_BASNET","DOC_MTOEXE","DOC_NETO","DOC_MTOIVA","DOC_FECHA","DOC_HORA","DOC_CODIGO"}
-  oDocCli:cFieldChkSum:="DOC_CHKSUM"
-
+ 
   cSql:=" SELECT "+SELECTFROM("DPMOVINV",.F.)+;
         " ,IF(MOV_NUMMEM>0 AND MEM_DESCRI<>'',MEM_DESCRI,INV_DESCRI) AS INV_DESCRI, MOV_PRECIO-(MOV_PRECIO*(MOV_DESCUE/100)) AS MOV_MTODES,   "+;
         " MOV_PRECIO/DOC_VALCAM AS MOV_PREDIV,MOV_MTODIV,CRC_NOMBRE "+;
